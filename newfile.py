@@ -1,36 +1,37 @@
-# Jenish's Mega Quiz - 8 Questions
-print("--- Welcome to Jenish's 8-Question Challenge ---")
-score = 0
+from flask import Flask, request
 
-# Questions ki list
+app = Flask(__name__)
+
+# Questions aur unke options
 questions = [
-    ["Python kya hai?", "a) Programming Language", "b) Saanp ka naam", "a"],
-    ["Website banane ke liye kya use kiya?", "a) Flask", "b) Instagram", "a"],
-    ["Variable kya hota hai?", "a) Ek box", "b) Ek error", "a"],
-    ["Print karne ke liye kya likhte hain?", "a) display()", "b) print()", "b"],
-    ["User se puchne ke liye kya use hota hai?", "a) input()", "b) take()", "a"],
-    ["Coding kahan likh rahe ho?", "a) Pydroid 3", "b) WhatsApp", "a"],
-    ["Aapka naam kya hai?", "a) Jenish", "b) Rahul", "a"],
-    ["Kya aap coder ban gaye ho?", "a) Haan", "b) Nahi", "a"]
+    {"q": "Python kya hai?", "a": "Language", "b": "Snake", "ans": "a"},
+    {"q": "Website ke liye kya use hota hai?", "a": "Flask", "b": "Free Fire", "ans": "a"},
+    {"q": "Variable kya hai?", "a": "Ek Box", "b": "Error", "ans": "a"},
+    {"q": "User input ke liye command?", "a": "take()", "b": "input()", "ans": "b"},
+    {"q": "GitHub kiske liye hai?", "a": "Code save karne", "b": "Chatting", "ans": "a"},
+    {"q": "Render kya karta hai?", "a": "Live website", "b": "Game khelna", "ans": "a"},
+    {"q": "Coding kahan likhte hain?", "a": "WhatsApp", "b": "Editor/Pydroid", "ans": "b"},
+    {"q": "Aapka naam kya hai?", "a": "Jenish", "b": "Rahul", "ans": "a"}
 ]
 
-# Loop jo har sawaal ko ek-ek karke puchega
-for q in questions:
-    print("\n" + q[0])
-    print(q[1])
-    print(q[2])
-    ans = input("Jawab (a/b): ").lower()
-    
-    if ans == q[3]:
-        print("Sahi! ✅")
-        score += 1
-    else:
-        print("Galat! ❌")
+@app.route('/')
+def home():
+    html = "<h1>Welcome to Jenish's Mega Quiz!</h1><p>Niche sawaalon ke jawab dein:</p><form action='/result' method='POST'>"
+    for i, q in enumerate(questions):
+        html += f"<p>{i+1}. {q['q']}<br>"
+        html += f"<input type='radio' name='q{i}' value='a'> {q['a']} <br>"
+        html += f"<input type='radio' name='q{i}' value='b'> {q['b']} </p>"
+    html += "<button type='submit'>Check Score</button></form>"
+    return html
 
-print("\n--- Final Score ---")
-print(f"Jenish, aapka score hai: {score}/8")
+@app.route('/result', methods=['POST'])
+def result():
+    score = 0
+    for i, q in enumerate(questions):
+        user_ans = request.form.get(f'q{i}')
+        if user_ans == q['ans']:
+            score += 1
+    return f"<h1>Jenish, aapka score hai: {score}/8</h1><a href='/'>Wapas koshish karein</a>"
 
-if score >= 6:
-    print("Shabash! Aap pro ban rahe ho. 🏆")
-else:
-    print("Thodi aur mehnat karo Jenish! 💪")
+if __name__ == "__main__":
+    app.run()
